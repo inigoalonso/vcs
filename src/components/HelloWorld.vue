@@ -1,142 +1,156 @@
 <template>
   <v-container>
     <v-layout
-      text-center
       wrap
     >
-      <v-flex xs12>
-        <v-img
-          :src="require('../assets/logo.svg')"
-          class="my-3"
-          contain
-          height="200"
-        ></v-img>
-      </v-flex>
-
-      <v-flex mb-4>
-        <h1 class="display-2 font-weight-bold mb-3">
-          Welcome to Vuetify
-        </h1>
-        <p class="subheading font-weight-regular">
-          For help and collaboration with other Vuetify developers,
-          <br>please join our online
-          <a href="https://community.vuetifyjs.com" target="_blank">Discord Community</a>
-        </p>
-      </v-flex>
-
-      <v-flex
-        mb-5
-        xs12
-      >
-        <h2 class="headline font-weight-bold mb-3">What's next?</h2>
-
-        <v-layout justify-center>
-          <a
-            v-for="(next, i) in whatsNext"
-            :key="i"
-            :href="next.href"
-            class="subheading mx-3"
-            target="_blank"
-          >
-            {{ next.text }}
-          </a>
-        </v-layout>
-      </v-flex>
-
       <v-flex
         xs12
-        mb-5
       >
-        <h2 class="headline font-weight-bold mb-3">Important Links</h2>
-
-        <v-layout justify-center>
-          <a
-            v-for="(link, i) in importantLinks"
-            :key="i"
-            :href="link.href"
-            class="subheading mx-3"
-            target="_blank"
-          >
-            {{ link.text }}
-          </a>
-        </v-layout>
+        <v-card
+          class="mx-auto my-3"
+        >
+          <v-card-title>1. List needs</v-card-title>
+          <v-card-text>
+            <p class="text-left">Derived from the stakeholders' expectations, and categorized into Value Dimensions.</p>
+            <v-form 
+              v-model="valid"
+              ref="form"
+            >
+              <v-container>
+                <v-row>
+                  <v-col
+                    cols="12"
+                    md="10"
+                  >
+                    <v-text-field
+                      v-model="description"
+                      :rules="textRules"
+                      :counter="280"
+                      label="Need description"
+                      required
+                    ></v-text-field>
+                  </v-col>
+                  <v-col
+                    cols="12"
+                    md="2"
+                  >
+                    <v-btn @click="submit">submit</v-btn>
+                  </v-col>
+                </v-row>
+              </v-container>
+            </v-form>
+          </v-card-text>
+        </v-card>
       </v-flex>
-
       <v-flex
         xs12
-        mb-5
       >
-        <h2 class="headline font-weight-bold mb-3">Ecosystem</h2>
-
-        <v-layout justify-center>
-          <a
-            v-for="(eco, i) in ecosystem"
-            :key="i"
-            :href="eco.href"
-            class="subheading mx-3"
-            target="_blank"
-          >
-            {{ eco.text }}
-          </a>
-        </v-layout>
+        <v-card
+          class="mx-auto my-3"
+        >
+          <v-card-title>2. List engineering aspects impacting each need</v-card-title>
+          <v-card-text>
+            <p class="text-left">Design parameters that can be controlled during the development. Value Drivers are the key engineering characteristics.</p>
+            <ul>
+              <li>Example</li>
+              <li>Example 2</li>
+            </ul>
+          </v-card-text>
+        </v-card>
+      </v-flex>
+      <v-flex
+        xs12
+      >
+        <v-card
+          class="mx-auto my-3"
+        >
+          <v-card-title>3. Specify a set of Value Creation Strategies</v-card-title>
+          <v-card-text>
+            <p class="text-left">Scenarios</p>
+          </v-card-text>
+        </v-card>
+      </v-flex>
+      <v-flex
+        xs12
+      >
+        <v-card
+          class="mx-auto my-3"
+        >
+          <v-card-title>4. Stablish priorities for a specific VCS</v-card-title>
+          <v-card-text>
+            <p class="text-left">Drag and drop the following needs to rank them so the ones you value the most are at the top:</p>
+            <v-list flat>
+              
+              <v-list-item-group v-model="need" color="blue-grey">
+                <draggable v-model="needs" group="needs" @end="updateNeedOrder">
+                  <v-list-item
+                    v-for="(need, i) in needs"
+                    :key="i"
+                  >
+                    <v-list-item-icon>
+                      <span v-text="need.order"></span>
+                    </v-list-item-icon>
+                    <v-list-item-content>
+                      <v-list-item-title v-text="need.text"></v-list-item-title>
+                    </v-list-item-content>
+                    <v-list-item-icon>
+                      <span v-text="need.icon"></span>
+                    </v-list-item-icon>
+                  </v-list-item>
+                </draggable>
+              </v-list-item-group>
+            </v-list>
+          </v-card-text>
+        </v-card>
+      </v-flex>
+      <v-flex
+        xs12
+      >
+        <v-card
+          class="mx-auto my-3"
+        >
+          <v-card-title>5. Repeat for all VCSs</v-card-title>
+          <v-card-text>
+          </v-card-text>
+        </v-card>
       </v-flex>
     </v-layout>
   </v-container>
 </template>
 
 <script>
+import draggable from 'vuedraggable'
 export default {
+  components: {
+    draggable,
+  },
   data: () => ({
-    ecosystem: [
-      {
-        text: 'vuetify-loader',
-        href: 'https://github.com/vuetifyjs/vuetify-loader',
-      },
-      {
-        text: 'github',
-        href: 'https://github.com/vuetifyjs/vuetify',
-      },
-      {
-        text: 'awesome-vuetify',
-        href: 'https://github.com/vuetifyjs/awesome-vuetify',
-      },
+    valid: false,
+    description: '',
+    textRules: [
+      v => !!v || 'This field is required',
+      v => v.length <= 280 || 'Text must be less than 280 characters',
     ],
-    importantLinks: [
-      {
-        text: 'Documentation',
-        href: 'https://vuetifyjs.com',
-      },
-      {
-        text: 'Chat',
-        href: 'https://community.vuetifyjs.com',
-      },
-      {
-        text: 'Made with Vuetify',
-        href: 'https://madewithvuejs.com/vuetify',
-      },
-      {
-        text: 'Twitter',
-        href: 'https://twitter.com/vuetifyjs',
-      },
-      {
-        text: 'Articles',
-        href: 'https://medium.com/vuetify',
-      },
-    ],
-    whatsNext: [
-      {
-        text: 'Explore components',
-        href: 'https://vuetifyjs.com/components/api-explorer',
-      },
-      {
-        text: 'Select a layout',
-        href: 'https://vuetifyjs.com/layout/pre-defined',
-      },
-      {
-        text: 'Frequently Asked Questions',
-        href: 'https://vuetifyjs.com/getting-started/frequently-asked-questions',
-      },
+    need: null,
+    needs: [
+      { text: 'Low sale price', icon: '💰', order: '1' },
+      { text: 'High performance', icon: '🏅', order: '2' },
+      { text: 'High reliability', icon: '🐢', order: '3' },
+      { text: 'High maintainability', icon: '🛠️', order: '4' },
     ],
   }),
+  methods: {
+    submit () {
+      this.needs.push({ text: this.description, icon: "", order: this.needs.length + 1 })
+      this.$refs.form.reset()
+      this.description = ''
+    },
+    updateNeedOrder: function() {
+      var needs = this.needs.map(function(need, index) {
+        return { text: need.text, icon: need.icon, order: index+1 }
+      })
+      this.needs = needs
+    },
+  },
 };
 </script>
